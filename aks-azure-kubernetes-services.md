@@ -7,7 +7,7 @@ SUBSCRIPTION=MSDN-PHMAC
 
 SUBSCRIPTION=$(az account subscription show --subscription-id "dcda7a37-a30e-49fe-aecf-65a8c7945f1e" --query displayName -o tsv)
 
-REGION_NAME=eastus
+REGION_NAME=westus
 RESOURCE_GROUP=rg-aks-kubenet-cli
 SUBNET_NAME=subnet-aks-kubenet-cli
 VNET_NAME=vnet-aks
