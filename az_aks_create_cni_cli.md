@@ -3,8 +3,11 @@
 ## Criar variaveis de Ambiente, Região, Resource Group, subnet e vnet onde o Cluster será provisionado.
 
 ```
-SUBSCRIPTION=MSDN
-REGION_NAME=eastus
+SUBSCRIPTION=MSDN-PHMAC
+
+SUBSCRIPTION=$(az account subscription show --subscription-id "dcda7a37-a30e-49fe-aecf-65a8c7945f1e" --query displayName -o tsv)
+
+REGION_NAME=westus
 RESOURCE_GROUP=rg-aks-cni-cli
 SUBNET_NAME=subnet-aks-cni-cli
 VNET_NAME=vnet-aks
@@ -34,6 +37,7 @@ VERSION=$(az aks get-versions \
 
 ```
 AKS_CLUSTER_NAME=aks-cni-cli-$RANDOM
+AKS_CLUSTER_NAME=aks-cni-cli-1338
 ```
 
 ## Exibir o nome guardado nessa variável que contem o nome do Cluster que deve ser único.
@@ -45,15 +49,24 @@ echo $AKS_CLUSTER_NAME
 ## Vamos criar uma service principal com nome customizado:
 
 ```
-az ad sp create-for-rbac \
-  --skip-assignment \
-  -n "sp-aks-dev"
+SPNAME="sp-aks-dev"
+
+SPPASS=$(az ad sp create-for-rbac \
+    --skip-assignment \
+    -n "$SPNAME" --query password -o tsv) 
 ```
+SPAPPID=$(az ad sp list --filter "displayName eq '$SPNAME'" --query  [].appId -o tsv)
+
+
 
 ## Salvar as informações para utilização:
 
 {
-  
+  "appId": "c2b7868f-fecc-42d5-8811-df0754e7bfb3",
+  "displayName": "sp-aks-dev",
+  "name": "c2b7868f-fecc-42d5-8811-df0754e7bfb3",
+  "password": "ApEbFm-f~2CHQf.f7Sm3aYM82~nqH8Bzho",
+  "tenant": "a6108e9b-21da-47a1-ba88-06fbe7d3564a"
 }
 
 ## Adicionar permissão no RG Vnet para service principal do AKS:
@@ -61,7 +74,7 @@ az ad sp create-for-rbac \
 ```
 az role assignment create \
   --role "Owner" \
-  --assignee "id_service_principal" \
+  --assignee "$SPAPPID" \
   --resource-group $RG_VNET
 ```
 
@@ -74,9 +87,9 @@ az aks create \
   --location $REGION_NAME \
   --kubernetes-version $VERSION \
   --subscription $SUBSCRIPTION \
-  --ssh-key-value /home/lpessol/.ssh/id_rsa.pub \
-  --service-principal "service_principal_id" \
-  --client-secret "service_principal_password" \
+  --ssh-key-value /home/paulo/.ssh/id_rsa.pub \
+  --service-principal "$SPAPPID" \
+  --client-secret "$SPPASS" \
   --network-plugin azure \
   --load-balancer-sku standard \
   --outbound-type loadBalancer \

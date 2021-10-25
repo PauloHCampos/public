@@ -58,7 +58,7 @@ echo $AKS_CLUSTER_NAME
   --location $REGION_NAME \
   --network-plugin kubenet \
   --node-osdisk-size 500 \
-  --node-vm-size Standard_F8s \
+  --node-vm-size Standard_B2s \
   --pod-cidr 10.244.0.0/16 \
   --service-cidr 10.0.0.0/16 \
   --load-balancer-sku basic \

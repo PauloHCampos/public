@@ -55,3 +55,5 @@ kubectl proxy
 ```
 
 Access: http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+13.86.225.205
+http://13.86.225.205:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
